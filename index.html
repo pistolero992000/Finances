@@ -1,684 +1,536 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Finanzas"/>
-  <meta name="theme-color" content="#1e1b4b"/>
-  <title>Control Financiero Personal</title>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/recharts@2.12.0/umd/Recharts.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body{background:#f1f5f9;overscroll-behavior:none}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes fd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    .fade{animation:fd .25s ease}
-    .mono{font-family:'DM Mono',monospace}
-    input::-webkit-inner-spin-button{-webkit-appearance:none}
-    select option{color:#1e293b}
-    ::-webkit-scrollbar{width:4px;height:4px}
-    ::-webkit-scrollbar-track{background:#f1f5f9}
-    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Finanzas"/>
+<meta name="theme-color" content="#1e1b4b"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Control Financiero</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Mono&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;font-family:'DM Sans',system-ui,sans-serif}
+body{background:#f1f5f9;min-height:100vh;padding-bottom:80px}
+.mono{font-family:'DM Mono',monospace}
+input,select,button{font-family:'DM Sans',sans-serif;font-size:14px}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input,select{width:100%;border:1px solid #e2e8f0;border-radius:12px;padding:11px 12px;font-size:13px;outline:none;background:white;-webkit-appearance:none;appearance:none;color:#1e293b}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:12px;padding-right:32px;background-color:white}
+.card{background:white;border-radius:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #f1f5f9;padding:16px;margin-bottom:14px}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:12px}
+.btn-amber{width:100%;padding:13px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:12px}
+.label{font-size:11px;color:#94a3b8;display:block;margin-bottom:4px;font-weight:700;letter-spacing:.5px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.pill{padding:6px 13px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid #e2e8f0;background:white;color:#64748b;cursor:pointer}
+.pill.on{background:#4f46e5;color:white;border-color:#4f46e5}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:white;border-top:1px solid #e2e8f0;box-shadow:0 -2px 12px rgba(0,0,0,.08);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.tab-btn{flex:1;padding:8px 2px;font-size:10px;font-weight:600;border:none;border-top:2px solid transparent;background:none;color:#94a3b8;cursor:pointer;text-align:center;line-height:1.4}
+.tab-btn.on{color:#4f46e5;border-top-color:#4f46e5}
+.hdr{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 55%,#4338ca 100%);padding:52px 16px 16px}
+.cnt{max-width:740px;margin:0 auto;padding:16px 12px 20px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.irow{display:flex;justify-content:space-between;align-items:center;background:#f8fafc;border-radius:10px;padding:10px 12px;border:1px solid #e2e8f0;margin-bottom:6px}
+.x{color:#fca5a5;background:none;border:none;cursor:pointer;font-size:20px;padding:0 4px;line-height:1}
+.badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700}
+.sc{background:white;border-radius:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #f1f5f9;padding:12px;text-align:center}
+.sl{font-size:11px;color:#94a3b8;font-weight:600}
+.sv{font-family:'DM Mono',monospace;font-weight:700;font-size:14px;margin-top:4px}
+.cb{padding:10px 4px;border-radius:14px;font-size:12px;font-weight:600;border:none;cursor:pointer;background:white;color:#64748b;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.cb.on{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;box-shadow:0 4px 14px rgba(79,70,229,.3)}
+.prog{height:6px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:8px 0}
+.progf{height:100%;border-radius:99px;background:linear-gradient(90deg,#4f46e5,#7c3aed)}
+.mbar{height:4px;background:#e2e8f0;border-radius:99px;margin-top:4px;overflow:hidden}
+.igch{background:linear-gradient(135deg,#1e1b4b,#4338ca);border-radius:20px;padding:20px;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:7px 5px;text-align:right;border-bottom:2px solid #e2e8f0;color:#94a3b8;font-weight:700;font-size:10px;text-transform:uppercase;white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:7px 5px;text-align:right;border-top:1px solid #f1f5f9;white-space:nowrap}
+td:first-child{text-align:left}
+.hl{background:#eef2ff;font-weight:700}
+.at{max-height:300px;overflow-y:auto;border-radius:10px;border:1px solid #e2e8f0;margin-top:8px}
+.inset{font-size:11px;color:#94a3b8;margin-top:8px}
+.st{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:12px}
+.np{background:#eef2ff;border-radius:12px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.es{text-align:center;color:#94a3b8;padding:40px 20px;background:white;border-radius:16px;border:2px dashed #e2e8f0;margin-bottom:14px}
+.spin{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#4f46e5;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.a55{font-size:11px;color:#7c3aed;background:#ede9fe;border-radius:8px;padding:8px 12px;margin-top:10px}
+.diffbox{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:14px;font-size:14px;font-weight:700}
+.tag{display:inline-block;padding:1px 7px;border-radius:99px;font-size:11px;font-weight:700}
+</style>
 </head>
 <body>
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState, useEffect, useMemo, useRef } = React;
-    const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
-
-    // ── Constants ──────────────────────────────────────────────────────────
-    const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    const MESES_C = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    const SUBCAT_VIDA = [
-      {id:"telefonia",label:"📱 Telefonía"},{id:"seguros",label:"🛡 Seguros"},
-      {id:"supermercado",label:"🛒 Supermercado"},{id:"autopistas",label:"🛣 Autopistas"},
-      {id:"combustible",label:"⛽ Combustible"},{id:"estacionamiento",label:"🅿 Estacionamiento"},
-      {id:"apv",label:"💼 APV"},{id:"educacion",label:"📚 Educación"},
-      {id:"creditos",label:"🏦 Créditos"},{id:"impuestos",label:"📋 Impuestos"},
-      {id:"internet",label:"🌐 Internet"},{id:"agua",label:"💧 Agua"},
-      {id:"electricidad",label:"⚡ Electricidad"},{id:"alarma",label:"🔒 Alarma"},
-      {id:"clubes",label:"🏋 Clubes"},
-    ];
-    const IGC_TRAMOS = [
-      {desde:0,hasta:13.5,tasa:0,rebaja:0,label:"Exento"},
-      {desde:13.5,hasta:30,tasa:0.04,rebaja:0.54,label:"4%"},
-      {desde:30,hasta:50,tasa:0.08,rebaja:1.74,label:"8%"},
-      {desde:50,hasta:70,tasa:0.135,rebaja:4.49,label:"13.5%"},
-      {desde:70,hasta:90,tasa:0.23,rebaja:11.14,label:"23%"},
-      {desde:90,hasta:120,tasa:0.304,rebaja:17.80,label:"30.4%"},
-      {desde:120,hasta:150,tasa:0.35,rebaja:23.28,label:"35%"},
-      {desde:150,hasta:Infinity,tasa:0.40,rebaja:30.78,label:"40%"},
-    ];
-
-    let _uid = Date.now();
-    const uid = () => String(_uid++);
-    const fmt = n => "$" + Math.round(n||0).toLocaleString("es-CL");
-
-    // ── Amortización francesa ─────────────────────────────────────────────
-    function calcCuota(P,r,n){ if(!P||!n)return 0; if(r===0)return P/n; return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1); }
-    function calcAmortK(P,r,n,k){
-      if(k<1||k>n)return{interes:0,capital:0,saldo:0,cuota:0};
-      const cuota=calcCuota(P,r,n);
-      if(r===0)return{interes:0,capital:cuota,saldo:Math.max(0,P-cuota*k),cuota};
-      const saldo0=P*(Math.pow(1+r,n)-Math.pow(1+r,k-1))/(Math.pow(1+r,n)-1);
-      const interes=saldo0*r;
-      return{interes,capital:cuota-interes,saldo:Math.max(0,saldo0-(cuota-interes)),cuota,saldo0};
-    }
-    function numCuota(c,anio,mes){
-      const k=(anio-c.anioInicio)*12+(mes-c.mesInicio)+1;
-      return(k>=1&&k<=c.totalCuotas)?k:null;
-    }
-
-    // ── Storage (localStorage) ─────────────────────────────────────────────
-    const sk = (tipo,a) => `finanzas-${tipo}-${a}`;
-    const lsGet = key => { try{ const v=localStorage.getItem(key); return v?JSON.parse(v):null; }catch(e){return null;} };
-    const lsSet = (key,val) => { try{ localStorage.setItem(key,JSON.stringify(val)); }catch(e){} };
-
-    // ── App ────────────────────────────────────────────────────────────────
-    function App() {
-      const hoy = new Date();
-      const [tab, setTab] = useState("ingresos");
-      const [anio, setAnio] = useState(hoy.getFullYear());
-      const [mes, setMes] = useState(hoy.getMonth());
-      const [loaded, setLoaded] = useState(false);
-      const [fetchingSII, setFetchingSII] = useState(false);
-      const [config, setConfig] = useState({utm:68050,uf:38000,lastUpdate:null});
-      const [ingresos, setIngresos] = useState({});
-      const [gastos, setGastos] = useState({});
-      const [creditos, setCreditos] = useState([]);
-      const [periodo, setPeriodo] = useState("anual");
-      const [subGasto, setSubGasto] = useState("vida");
-      const [showAmort, setShowAmort] = useState(null);
-      const prevAnio = useRef(anio);
-      const [formIng, setFormIng] = useState({fuente:"",totalHaberes:"",afp:"",salud:"",impuestoRetenido:"",otros:""});
-      const [formGas, setFormGas] = useState({subcategoria:"telefonia",descripcion:"",monto:"",cuotaActual:"",totalCuotas:""});
-      const [formCred, setFormCred] = useState({nombre:"",tipo:"hipotecario",montoOriginal:"",tasaMensual:"",totalCuotas:"",mesInicio:hoy.getMonth(),anioInicio:hoy.getFullYear()});
-
-      // Load data
-      const loadYear = (a) => {
-        const ir = lsGet(sk("ingresos",a)); setIngresos(ir||{});
-        const gr = lsGet(sk("gastos",a)); setGastos(gr||{});
-      };
-      useEffect(()=>{
-        const cr=lsGet("finanzas-creditos"); if(cr)setCreditos(cr);
-        const cfg=lsGet("finanzas-config"); if(cfg)setConfig(cfg);
-        loadYear(anio);
-        setLoaded(true);
-      },[]);
-      useEffect(()=>{ if(!loaded)return; if(anio!==prevAnio.current){prevAnio.current=anio;loadYear(anio);} },[anio,loaded]);
-
-      // Save data
-      useEffect(()=>{ if(loaded)lsSet(sk("ingresos",anio),ingresos); },[ingresos,loaded]);
-      useEffect(()=>{ if(loaded)lsSet(sk("gastos",anio),gastos); },[gastos,loaded]);
-      useEffect(()=>{ if(loaded)lsSet("finanzas-creditos",creditos); },[creditos,loaded]);
-      useEffect(()=>{ if(loaded)lsSet("finanzas-config",config); },[config,loaded]);
-
-      // Auto-fetch SII desde mindicador.cl (API pública chilena, sin auth)
-      const fetchSII = async () => {
-        setFetchingSII(true);
-        try {
-          const [ru, rf] = await Promise.all([
-            fetch("https://mindicador.cl/api/utm"),
-            fetch("https://mindicador.cl/api/uf"),
-          ]);
-          const [du, df] = await Promise.all([ru.json(), rf.json()]);
-          const utm = du?.serie?.[0]?.valor;
-          const uf  = df?.serie?.[0]?.valor;
-          if(utm&&uf) setConfig({utm:Math.round(utm),uf:Math.round(uf),lastUpdate:hoy.toISOString().split("T")[0]});
-        } catch(e){ console.error("SII fetch error:",e); }
-        setFetchingSII(false);
-      };
-      useEffect(()=>{
-        if(!loaded)return;
-        const hoyStr=hoy.toISOString().split("T")[0];
-        if(!config.lastUpdate||config.lastUpdate<hoyStr) fetchSII();
-      },[loaded]);
-
-      // ── Derived ──────────────────────────────────────────────────────────
-      const getIng = m => ingresos[String(m)]||[];
-      const getGas = m => gastos[String(m)]||[];
-      const totIng = m => {
-        const l=getIng(m);
-        const hab=l.reduce((s,x)=>s+x.totalHaberes,0);
-        const afp=l.reduce((s,x)=>s+x.afp,0);
-        const sal=l.reduce((s,x)=>s+x.salud,0);
-        const ret=l.reduce((s,x)=>s+x.impuestoRetenido,0);
-        const otr=l.reduce((s,x)=>s+x.otros,0);
-        return{haberes:hab,afp,salud:sal,retenido:ret,otros:otr,neto:hab-afp-sal-ret-otr};
-      };
-      const totGas = m => getGas(m).reduce((s,x)=>s+x.monto,0);
-      const totGasCat = (m,cat) => getGas(m).filter(x=>x.categoria===cat).reduce((s,x)=>s+x.monto,0);
-      const credActivos = (a,m) => creditos.map(c=>{
-        const k=numCuota(c,a,m); if(!k)return null;
-        const r=c.tasaMensual/100;
-        const am=calcAmortK(c.montoOriginal,r,c.totalCuotas,k);
-        return{...c,k,...am};
-      }).filter(Boolean);
-
-      const interesHipoAnual = useMemo(()=>{
-        let t=0;
-        for(let m=0;m<12;m++) for(const c of credActivos(anio,m)) if(c.tipo==="hipotecario")t+=c.interes;
-        return t;
-      },[creditos,anio,ingresos]);
-
-      const igcCalc = useMemo(()=>{
-        const uta=config.utm*12;
-        const rentaBruta=[0,1,2,3,4,5,6,7,8,9,10,11].reduce((s,m)=>s+totIng(m).haberes,0);
-        const retenido=[0,1,2,3,4,5,6,7,8,9,10,11].reduce((s,m)=>s+totIng(m).retenido,0);
-        const ded55bis=Math.min(interesHipoAnual,8*uta);
-        const rentaImponible=Math.max(0,rentaBruta-ded55bis);
-        const rentaUTA=uta>0?rentaImponible/uta:0;
-        let tramo=IGC_TRAMOS[0];
-        for(const t of IGC_TRAMOS)if(rentaUTA>t.desde)tramo=t;
-        const igcVal=Math.max(0,rentaImponible*tramo.tasa-tramo.rebaja*uta);
-        return{rentaBruta,rentaImponible,uta,rentaUTA,tramo,igc:igcVal,retenido,ded55bis,interesHipo:interesHipoAnual,diferencia:igcVal-retenido};
-      },[ingresos,config,anio,interesHipoAnual]);
-
-      const mesesPer = useMemo(()=>{
-        if(periodo==="anual")return[0,1,2,3,4,5,6,7,8,9,10,11];
-        if(periodo==="s1")return[0,1,2,3,4,5];
-        if(periodo==="s2")return[6,7,8,9,10,11];
-        const q=parseInt(periodo[1])-1;return[q*3,q*3+1,q*3+2];
-      },[periodo]);
-
-      const resumen = useMemo(()=>({
-        haberes:mesesPer.reduce((s,m)=>s+totIng(m).haberes,0),
-        neto:mesesPer.reduce((s,m)=>s+totIng(m).neto,0),
-        gastos:mesesPer.reduce((s,m)=>s+totGas(m),0),
-        vida:mesesPer.reduce((s,m)=>s+totGasCat(m,"vida"),0),
-        cuotas:mesesPer.reduce((s,m)=>s+totGasCat(m,"cuotas"),0),
-        varios:mesesPer.reduce((s,m)=>s+totGasCat(m,"varios"),0),
-      }),[ingresos,gastos,anio,mesesPer]);
-
-      const barData = MESES_C.map((label,m)=>({mes:label,Ingresos:totIng(m).neto,Gastos:totGas(m),Ahorro:Math.max(0,totIng(m).neto-totGas(m))}));
-
-      // ── Actions ───────────────────────────────────────────────────────────
-      const addIng = () => {
-        if(!formIng.totalHaberes)return;
-        const afp=+formIng.afp||0,sal=+formIng.salud||0,ret=+formIng.impuestoRetenido||0,otr=+formIng.otros||0,hab=+formIng.totalHaberes||0;
-        setIngresos(p=>({...p,[String(mes)]:[...getIng(mes),{id:uid(),fuente:formIng.fuente||"Sueldo",totalHaberes:hab,afp,salud:sal,impuestoRetenido:ret,otros:otr,neto:hab-afp-sal-ret-otr}]}));
-        setFormIng({fuente:"",totalHaberes:"",afp:"",salud:"",impuestoRetenido:"",otros:""});
-      };
-      const addGas = () => {
-        if(!formGas.monto)return;
-        setGastos(p=>({...p,[String(mes)]:[...getGas(mes),{id:uid(),categoria:subGasto,subcategoria:subGasto==="vida"?formGas.subcategoria:"",descripcion:formGas.descripcion||"",monto:+formGas.monto||0,cuotaActual:+formGas.cuotaActual||0,totalCuotas:+formGas.totalCuotas||0}]}));
-        setFormGas(p=>({...p,descripcion:"",monto:"",cuotaActual:"",totalCuotas:""}));
-      };
-      const addCred = () => {
-        if(!formCred.montoOriginal||!formCred.tasaMensual||!formCred.totalCuotas)return;
-        const P=+formCred.montoOriginal,r=+formCred.tasaMensual/100,n=+formCred.totalCuotas;
-        setCreditos(p=>[...p,{id:uid(),nombre:formCred.nombre||"Crédito",tipo:formCred.tipo,montoOriginal:P,tasaMensual:+formCred.tasaMensual,totalCuotas:n,mesInicio:+formCred.mesInicio,anioInicio:+formCred.anioInicio,cuotaMensual:calcCuota(P,r,n)}]);
-        setFormCred(p=>({...p,nombre:"",montoOriginal:"",tasaMensual:"",totalCuotas:""}));
-      };
-
-      // ── Styles ────────────────────────────────────────────────────────────
-      const ic = {width:"100%",border:"1px solid #e2e8f0",borderRadius:12,padding:"10px 12px",fontSize:13,outline:"none",background:"rgba(255,255,255,0.8)",fontFamily:"'DM Sans',sans-serif",WebkitAppearance:"none"};
-      const card = {background:"white",borderRadius:20,boxShadow:"0 1px 4px rgba(0,0,0,0.06)",border:"1px solid #f1f5f9",padding:16};
-      const pill = a => ({padding:"6px 14px",borderRadius:99,fontSize:11,fontWeight:600,border:a?"none":"1px solid #e2e8f0",background:a?"#4f46e5":"white",color:a?"white":"#64748b",cursor:"pointer",transition:"all .15s",WebkitAppearance:"none"});
-      const btnPrimary = {width:"100%",padding:13,background:"linear-gradient(135deg,#4f46e5,#7c3aed)",color:"white",borderRadius:12,fontSize:14,fontWeight:600,border:"none",cursor:"pointer"};
-
-      if(!loaded) return (
-        <div style={{display:"flex",justifyContent:"center",alignItems:"center",height:"100vh",flexDirection:"column",gap:12,fontFamily:"'DM Sans',sans-serif",background:"#f1f5f9"}}>
-          <div style={{width:36,height:36,border:"3px solid #e2e8f0",borderTop:"3px solid #4f46e5",borderRadius:"50%",animation:"spin .7s linear infinite"}}/>
-          <div style={{color:"#64748b",fontSize:14}}>Cargando...</div>
-        </div>
-      );
-
-      const credActivosMes = credActivos(anio,mes);
-
-      return (
-        <div style={{fontFamily:"'DM Sans',system-ui,sans-serif",minHeight:"100vh",background:"#f1f5f9",paddingBottom:80}}>
-
-          {/* HEADER */}
-          <div style={{background:"linear-gradient(135deg,#1e1b4b 0%,#312e81 55%,#4338ca 100%)",padding:"52px 16px 16px"}}>
-            <div style={{maxWidth:740,margin:"0 auto"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                <div>
-                  <div style={{fontSize:18,fontWeight:700,color:"white",letterSpacing:-0.5}}>💼 Control Financiero</div>
-                  <div style={{marginTop:5,display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
-                    <span style={{fontSize:11,color:"#a5b4fc"}}>{fetchingSII?"🔄 Actualizando...":config.lastUpdate?"✅ "+config.lastUpdate:"⚠️ Sin datos SII"}</span>
-                    {!fetchingSII&&<button onClick={fetchSII} style={{fontSize:10,color:"#c7d2fe",background:"rgba(255,255,255,0.12)",border:"none",borderRadius:99,padding:"2px 10px",cursor:"pointer"}}>↻</button>}
-                  </div>
-                  <div style={{marginTop:5,display:"flex",gap:14,fontSize:12,color:"#c7d2fe"}}>
-                    <span>UTM: <b style={{fontFamily:"'DM Mono',monospace"}}>{fmt(config.utm)}</b></span>
-                    <span>UF: <b style={{fontFamily:"'DM Mono',monospace"}}>{fmt(config.uf)}</b></span>
-                  </div>
-                </div>
-                <select style={{background:"rgba(255,255,255,0.15)",border:"1px solid rgba(255,255,255,0.25)",borderRadius:12,padding:"8px 12px",color:"white",fontSize:14,fontWeight:700,cursor:"pointer",WebkitAppearance:"none"}} value={anio} onChange={e=>setAnio(+e.target.value)}>
-                  {[2022,2023,2024,2025,2026].map(a=><option key={a} style={{color:"#1e293b"}}>{a}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* TABS — fijos al fondo en móvil */}
-          <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:50,background:"white",borderTop:"1px solid #e2e8f0",boxShadow:"0 -2px 12px rgba(0,0,0,0.08)",paddingBottom:"env(safe-area-inset-bottom)"}}>
-            <div style={{display:"flex",maxWidth:740,margin:"0 auto"}}>
-              {[{id:"ingresos",icon:"💰",l:"Ingresos"},{id:"gastos",icon:"💳",l:"Gastos"},{id:"creditos",icon:"🏦",l:"Créditos"},{id:"reportes",icon:"📊",l:"Reportes"},{id:"igc",icon:"🧾",l:"IGC"}].map(t=>(
-                <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"8px 2px",fontSize:10,fontWeight:600,border:"none",borderTop:`2px solid ${tab===t.id?"#4f46e5":"transparent"}`,background:"none",color:tab===t.id?"#4f46e5":"#94a3b8",cursor:"pointer",transition:"all .15s"}}>
-                  <div style={{fontSize:20}}>{t.icon}</div><div>{t.l}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{maxWidth:740,margin:"0 auto",padding:"16px 12px 20px"}} className="fade">
-
-            {/* ════ INGRESOS ════ */}
-            {tab==="ingresos" && <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {MESES_C.map((m,i)=><button key={i} onClick={()=>setMes(i)} style={pill(mes===i)}>{m}</button>)}
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:12,color:"#1e293b"}}>➕ Nuevo ingreso — <span style={{color:"#4f46e5"}}>{MESES[mes]}</span></div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                  <div style={{gridColumn:"1/-1"}}>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>FUENTE</label>
-                    <input style={ic} placeholder="Sueldo, Honorarios, Arriendo..." value={formIng.fuente} onChange={e=>setFormIng(p=>({...p,fuente:e.target.value}))}/>
-                  </div>
-                  {[{k:"totalHaberes",l:"TOTAL HABERES"},{k:"afp",l:"DESC. AFP"},{k:"salud",l:"DESC. SALUD"},{k:"impuestoRetenido",l:"IMPUESTO RETENIDO"},{k:"otros",l:"OTROS DESC."}].map(f=>(
-                    <div key={f.k}>
-                      <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>{f.l}</label>
-                      <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="0" value={formIng[f.k]} onChange={e=>setFormIng(p=>({...p,[f.k]:e.target.value}))}/>
-                    </div>
-                  ))}
-                  {formIng.totalHaberes&&<div style={{gridColumn:"1/-1",background:"#eef2ff",borderRadius:12,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:13,color:"#6366f1"}}>Neto estimado</span>
-                    <b style={{fontSize:16,color:"#4f46e5",fontFamily:"'DM Mono',monospace"}}>{fmt((+formIng.totalHaberes||0)-(+formIng.afp||0)-(+formIng.salud||0)-(+formIng.impuestoRetenido||0)-(+formIng.otros||0))}</b>
-                  </div>}
-                </div>
-                <button onClick={addIng} style={{...btnPrimary,marginTop:12}}>Agregar ingreso</button>
-              </div>
-              {getIng(mes).length>0&&<div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>Ingresos de {MESES[mes]}</div>
-                {getIng(mes).map(item=>(
-                  <div key={item.id} style={{background:"#f8fafc",borderRadius:14,padding:"12px 14px",border:"1px solid #e2e8f0",marginBottom:8}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                      <span style={{fontWeight:600,fontSize:14}}>{item.fuente}</span>
-                      <button onClick={()=>setIngresos(p=>({...p,[String(mes)]:getIng(mes).filter(x=>x.id!==item.id)}))} style={{color:"#fca5a5",fontSize:18,background:"none",border:"none",cursor:"pointer",padding:"0 4px"}}>✕</button>
-                    </div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,fontSize:12}}>
-                      <div>Haberes<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#16a34a"}}>{fmt(item.totalHaberes)}</b></div>
-                      <div>AFP<br/><span style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(item.afp)}</span></div>
-                      <div>Salud<br/><span style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(item.salud)}</span></div>
-                      <div>Retenido<br/><span style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(item.impuestoRetenido)}</span></div>
-                      <div>Otros<br/><span style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(item.otros)}</span></div>
-                      <div style={{background:"#eef2ff",borderRadius:8,padding:"4px 8px"}}>Neto<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#4f46e5"}}>{fmt(item.neto)}</b></div>
-                    </div>
-                  </div>
-                ))}
-                {(()=>{const t=totIng(mes);return(
-                  <div style={{paddingTop:10,borderTop:"2px dashed #e2e8f0",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",textAlign:"center",gap:8,fontSize:12,color:"#64748b"}}>
-                    <div>Haberes<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#16a34a",fontSize:14}}>{fmt(t.haberes)}</b></div>
-                    <div>Descuentos<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#ef4444",fontSize:14}}>{fmt(t.afp+t.salud+t.retenido+t.otros)}</b></div>
-                    <div>Neto<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#4f46e5",fontSize:16}}>{fmt(t.neto)}</b></div>
-                  </div>
-                );})()}
-              </div>}
-            </div>}
-
-            {/* ════ GASTOS ════ */}
-            {tab==="gastos" && <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {MESES_C.map((m,i)=><button key={i} onClick={()=>setMes(i)} style={pill(mes===i)}>{m}</button>)}
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                {[{id:"vida",icon:"🏠",l:"Vida"},{id:"cuotas",icon:"📦",l:"Cuotas TC"},{id:"varios",icon:"🛍",l:"Varios"}].map(c=>(
-                  <button key={c.id} onClick={()=>setSubGasto(c.id)} style={{padding:"10px 4px",borderRadius:14,fontSize:12,fontWeight:600,border:"none",cursor:"pointer",background:subGasto===c.id?"linear-gradient(135deg,#4f46e5,#7c3aed)":"white",color:subGasto===c.id?"white":"#64748b",boxShadow:subGasto===c.id?"0 4px 14px rgba(79,70,229,0.3)":"0 1px 4px rgba(0,0,0,0.07)"}}>
-                    {c.icon} {c.l}
-                  </button>
-                ))}
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:12}}>➕ Gasto — <span style={{color:"#4f46e5"}}>{MESES[mes]}</span></div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                  {subGasto==="vida"&&<div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>SUBCATEGORÍA</label>
-                    <select style={ic} value={formGas.subcategoria} onChange={e=>setFormGas(p=>({...p,subcategoria:e.target.value}))}>
-                      {SUBCAT_VIDA.map(s=><option key={s.id} value={s.id}>{s.label}</option>)}
-                    </select>
-                  </div>}
-                  <div style={{gridColumn:subGasto!=="vida"?"1/-1":""}}>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>DESCRIPCIÓN</label>
-                    <input style={ic} placeholder="Descripción..." value={formGas.descripcion} onChange={e=>setFormGas(p=>({...p,descripcion:e.target.value}))}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>MONTO</label>
-                    <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="0" value={formGas.monto} onChange={e=>setFormGas(p=>({...p,monto:e.target.value}))}/>
-                  </div>
-                  {subGasto==="cuotas"&&<>
-                    <div><label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>CUOTA N°</label>
-                      <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="1" value={formGas.cuotaActual} onChange={e=>setFormGas(p=>({...p,cuotaActual:e.target.value}))}/></div>
-                    <div><label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>DE CUOTAS</label>
-                      <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="12" value={formGas.totalCuotas} onChange={e=>setFormGas(p=>({...p,totalCuotas:e.target.value}))}/></div>
-                  </>}
-                </div>
-                <button onClick={addGas} style={{...btnPrimary,marginTop:12}}>Agregar gasto</button>
-              </div>
-              {getGas(mes).filter(g=>g.categoria===subGasto).length>0&&<div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{subGasto==="vida"?"🏠 Vida":subGasto==="cuotas"?"📦 Cuotas TC":"🛍 Varios"} — {MESES[mes]}</div>
-                {getGas(mes).filter(g=>g.categoria===subGasto).map(item=>(
-                  <div key={item.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",background:"#f8fafc",borderRadius:10,padding:"10px 12px",border:"1px solid #e2e8f0",marginBottom:6}}>
-                    <div style={{fontSize:13,flex:1,minWidth:0,marginRight:8}}>
-                      {item.subcategoria&&<span style={{background:"#eef2ff",color:"#6366f1",padding:"1px 7px",borderRadius:99,fontSize:11,fontWeight:700,marginRight:6}}>{SUBCAT_VIDA.find(s=>s.id===item.subcategoria)?.label.replace(/^\S+\s/,"")}</span>}
-                      <span style={{color:"#475569"}}>{item.descripcion||"—"}</span>
-                      {item.totalCuotas>0&&<span style={{color:"#94a3b8",fontSize:11,marginLeft:4}}>({item.cuotaActual}/{item.totalCuotas})</span>}
-                    </div>
-                    <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
-                      <span style={{fontFamily:"'DM Mono',monospace",fontWeight:700,color:"#ef4444"}}>{fmt(item.monto)}</span>
-                      <button onClick={()=>setGastos(p=>({...p,[String(mes)]:getGas(mes).filter(x=>x.id!==item.id)}))} style={{color:"#fca5a5",background:"none",border:"none",cursor:"pointer",fontSize:18,padding:"0 2px"}}>✕</button>
-                    </div>
-                  </div>
-                ))}
-                <div style={{paddingTop:10,borderTop:"2px dashed #e2e8f0",display:"flex",justifyContent:"space-between",fontSize:14,fontWeight:700}}>
-                  <span>Subtotal</span><span style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(getGas(mes).filter(g=>g.categoria===subGasto).reduce((s,x)=>s+x.monto,0))}</span>
-                </div>
-              </div>}
-              {credActivosMes.length>0&&<div style={{...card,borderLeft:"4px solid #f59e0b"}}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>🏦 Créditos activos — {MESES[mes]}</div>
-                {credActivosMes.map(c=>(
-                  <div key={c.id} style={{background:"#fffbeb",borderRadius:12,padding:"12px 14px",marginBottom:8,border:"1px solid #fde68a"}}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:13,fontWeight:600,marginBottom:8}}>
-                      <div>{c.nombre} <span style={{color:"#94a3b8",fontWeight:400,fontSize:11}}>cuota {c.k}/{c.totalCuotas}</span></div>
-                      <span style={{fontFamily:"'DM Mono',monospace",color:"#d97706"}}>{fmt(c.cuota)}</span>
-                    </div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,fontSize:12}}>
-                      <div>Interés {c.tipo==="hipotecario"&&"⭐"}<br/><b style={{fontFamily:"'DM Mono',monospace",color:c.tipo==="hipotecario"?"#7c3aed":"#ef4444"}}>{fmt(c.interes)}</b></div>
-                      <div>Capital<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#16a34a"}}>{fmt(c.capital)}</b></div>
-                      <div>Saldo<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#475569"}}>{fmt(c.saldo)}</b></div>
-                    </div>
-                  </div>
-                ))}
-              </div>}
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-                {[{l:"Neto",v:totIng(mes).neto,c:"#16a34a"},{l:"Gastos",v:totGas(mes),c:"#ef4444"},{l:"Ahorro",v:totIng(mes).neto-totGas(mes),c:totIng(mes).neto-totGas(mes)>=0?"#4f46e5":"#dc2626"}].map((c,i)=>(
-                  <div key={i} style={{...card,textAlign:"center"}}>
-                    <div style={{fontSize:11,color:"#94a3b8",fontWeight:600}}>{c.l}</div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontWeight:700,fontSize:13,marginTop:4,color:c.c}}>{fmt(c.v)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>}
-
-            {/* ════ CRÉDITOS ════ */}
-            {tab==="creditos" && <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {MESES_C.map((m,i)=><button key={i} onClick={()=>setMes(i)} style={pill(mes===i)}>{m}</button>)}
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:12}}>➕ Registrar crédito</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                  <div style={{gridColumn:"1/-1"}}>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>NOMBRE</label>
-                    <input style={ic} placeholder="Hipotecario Banco X, Crédito consumo..." value={formCred.nombre} onChange={e=>setFormCred(p=>({...p,nombre:e.target.value}))}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>TIPO</label>
-                    <select style={ic} value={formCred.tipo} onChange={e=>setFormCred(p=>({...p,tipo:e.target.value}))}>
-                      <option value="hipotecario">🏠 Hipotecario</option>
-                      <option value="consumo">💳 Consumo</option>
-                      <option value="automotriz">🚗 Automotriz</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>MONTO ORIGINAL ($)</label>
-                    <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="0" value={formCred.montoOriginal} onChange={e=>setFormCred(p=>({...p,montoOriginal:e.target.value}))}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>TASA MENSUAL (%)</label>
-                    <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" step="0.001" placeholder="0.500" value={formCred.tasaMensual} onChange={e=>setFormCred(p=>({...p,tasaMensual:e.target.value}))}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>TOTAL CUOTAS</label>
-                    <input style={{...ic,fontFamily:"'DM Mono',monospace"}} type="number" placeholder="240" value={formCred.totalCuotas} onChange={e=>setFormCred(p=>({...p,totalCuotas:e.target.value}))}/>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>MES INICIO</label>
-                    <select style={ic} value={formCred.mesInicio} onChange={e=>setFormCred(p=>({...p,mesInicio:+e.target.value}))}>
-                      {MESES.map((m,i)=><option key={i} value={i}>{m}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{fontSize:11,color:"#94a3b8",display:"block",marginBottom:4,fontWeight:700}}>AÑO INICIO</label>
-                    <select style={ic} value={formCred.anioInicio} onChange={e=>setFormCred(p=>({...p,anioInicio:+e.target.value}))}>
-                      {[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026].map(a=><option key={a}>{a}</option>)}
-                    </select>
-                  </div>
-                  {formCred.montoOriginal&&formCred.tasaMensual&&formCred.totalCuotas&&(()=>{
-                    const P=+formCred.montoOriginal,r=+formCred.tasaMensual/100,n=+formCred.totalCuotas;
-                    const c=calcCuota(P,r,n);
-                    return <div style={{gridColumn:"1/-1",background:"#eef2ff",borderRadius:12,padding:"12px 14px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,fontSize:12}}>
-                      <div>Cuota mensual<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#4f46e5"}}>{fmt(c)}</b></div>
-                      <div>Total a pagar<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#7c3aed"}}>{fmt(c*n)}</b></div>
-                      <div>Total intereses<br/><b style={{fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(c*n-P)}</b></div>
-                    </div>;
-                  })()}
-                </div>
-                <button onClick={addCred} style={{marginTop:12,width:"100%",padding:13,background:"linear-gradient(135deg,#f59e0b,#d97706)",color:"white",borderRadius:12,fontSize:14,fontWeight:600,border:"none",cursor:"pointer"}}>Registrar crédito</button>
-              </div>
-              {creditos.length===0&&<div style={{textAlign:"center",color:"#94a3b8",padding:"40px 20px",background:"white",borderRadius:16,border:"2px dashed #e2e8f0"}}>
-                <div style={{fontSize:40}}>🏦</div>
-                <div style={{marginTop:8,fontSize:14,fontWeight:600}}>Sin créditos registrados</div>
-                <div style={{fontSize:12,marginTop:4}}>Registra hipotecarios o de consumo para ver la tabla de amortización y los intereses deducibles del IGC.</div>
-              </div>}
-              {creditos.map(c=>{
-                const r=c.tasaMensual/100,n=c.totalCuotas;
-                const k=numCuota(c,anio,mes);
-                const cuota=calcCuota(c.montoOriginal,r,n);
-                const am=k?calcAmortK(c.montoOriginal,r,n,k):null;
-                const expanded=showAmort===c.id;
-                const pct=k?Math.round((k/n)*100):0;
-                return <div key={c.id} style={{...card,borderLeft:`4px solid ${c.tipo==="hipotecario"?"#7c3aed":c.tipo==="consumo"?"#3b82f6":"#f59e0b"}`}}>
-                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                    <div>
-                      <div style={{fontWeight:700,fontSize:15}}>{c.nombre}</div>
-                      <div style={{fontSize:12,color:"#64748b",marginTop:3,display:"flex",gap:8,flexWrap:"wrap"}}>
-                        <span style={{background:c.tipo==="hipotecario"?"#ede9fe":c.tipo==="consumo"?"#dbeafe":"#fef3c7",color:c.tipo==="hipotecario"?"#7c3aed":c.tipo==="consumo"?"#2563eb":"#d97706",padding:"1px 8px",borderRadius:99,fontWeight:700,fontSize:11}}>{c.tipo}</span>
-                        <span>Tasa: {c.tasaMensual}% m.</span>
-                        <span>Inicio: {MESES_C[c.mesInicio]} {c.anioInicio}</span>
-                      </div>
-                    </div>
-                    <button onClick={()=>setCreditos(p=>p.filter(x=>x.id!==c.id))} style={{color:"#fca5a5",background:"none",border:"none",cursor:"pointer",fontSize:20,padding:"0 4px"}}>✕</button>
-                  </div>
-                  <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:6,fontSize:11,marginBottom:10}}>
-                    {[{l:"Monto",v:fmt(c.montoOriginal)},{l:"Cuota",v:fmt(cuota)},{l:"Plazo",v:`${n}m`},{l:k?"Cuota actual":"Estado",v:k?`${k}/${n}`:"Inactivo"}].map((x,i)=>(
-                      <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:8,textAlign:"center"}}>
-                        <div style={{color:"#94a3b8",fontSize:10,fontWeight:700}}>{x.l}</div>
-                        <div style={{fontFamily:"'DM Mono',monospace",fontWeight:700,marginTop:2,color:"#475569",fontSize:11}}>{x.v}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {k&&<div style={{height:6,background:"#e2e8f0",borderRadius:99,marginBottom:10,overflow:"hidden"}}>
-                    <div style={{height:"100%",borderRadius:99,background:"linear-gradient(90deg,#4f46e5,#7c3aed)",width:`${pct}%`}}/>
-                  </div>}
-                  {am&&<div style={{background:c.tipo==="hipotecario"?"#faf5ff":"#f0fdf4",borderRadius:14,padding:"12px 14px",marginBottom:10,border:`1px solid ${c.tipo==="hipotecario"?"#ddd6fe":"#bbf7d0"}`}}>
-                    <div style={{fontSize:12,fontWeight:700,color:c.tipo==="hipotecario"?"#7c3aed":"#166534",marginBottom:8}}>Detalle cuota {k} — {MESES[mes]} {anio}</div>
-                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,fontSize:12}}>
-                      <div>
-                        <div style={{color:"#64748b"}}>Interés {c.tipo==="hipotecario"&&"⭐"}</div>
-                        <b style={{fontFamily:"'DM Mono',monospace",color:c.tipo==="hipotecario"?"#7c3aed":"#ef4444",fontSize:14}}>{fmt(am.interes)}</b>
-                        <div style={{height:4,background:"#e2e8f0",borderRadius:99,marginTop:4}}>
-                          <div style={{height:"100%",borderRadius:99,background:c.tipo==="hipotecario"?"#7c3aed":"#ef4444",width:`${cuota>0?(am.interes/cuota)*100:0}%`}}/>
-                        </div>
-                        <div style={{color:"#94a3b8",fontSize:10,marginTop:2}}>{cuota>0?((am.interes/cuota)*100).toFixed(1):0}% cuota</div>
-                      </div>
-                      <div>
-                        <div style={{color:"#64748b"}}>Capital</div>
-                        <b style={{fontFamily:"'DM Mono',monospace",color:"#16a34a",fontSize:14}}>{fmt(am.capital)}</b>
-                        <div style={{height:4,background:"#e2e8f0",borderRadius:99,marginTop:4}}>
-                          <div style={{height:"100%",borderRadius:99,background:"#16a34a",width:`${cuota>0?(am.capital/cuota)*100:0}%`}}/>
-                        </div>
-                        <div style={{color:"#94a3b8",fontSize:10,marginTop:2}}>{cuota>0?((am.capital/cuota)*100).toFixed(1):0}% cuota</div>
-                      </div>
-                      <div>
-                        <div style={{color:"#64748b"}}>Saldo</div>
-                        <b style={{fontFamily:"'DM Mono',monospace",color:"#475569",fontSize:14}}>{fmt(am.saldo)}</b>
-                        <div style={{color:"#94a3b8",fontSize:10,marginTop:18}}>{c.montoOriginal>0?((am.saldo/c.montoOriginal)*100).toFixed(1):0}% del capital</div>
-                      </div>
-                    </div>
-                    {c.tipo==="hipotecario"&&<div style={{marginTop:10,fontSize:11,color:"#7c3aed",background:"#ede9fe",borderRadius:8,padding:"8px 12px"}}>
-                      ⭐ <b>Art. 55 bis:</b> Interés deducible IGC · Acumulado {anio}: <b style={{fontFamily:"'DM Mono',monospace"}}>{fmt(interesHipoAnual)}</b> (máx: {fmt(8*config.utm*12)})
-                    </div>}
-                  </div>}
-                  <button onClick={()=>setShowAmort(expanded?null:c.id)} style={{width:"100%",padding:9,background:"#f8fafc",border:"1px solid #e2e8f0",borderRadius:10,fontSize:12,fontWeight:600,color:"#475569",cursor:"pointer"}}>
-                    {expanded?"▲ Ocultar amortización":"▼ Tabla de amortización completa"}
-                  </button>
-                  {expanded&&<div style={{marginTop:8,maxHeight:320,overflowY:"auto",borderRadius:10,border:"1px solid #e2e8f0"}}>
-                    <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-                      <thead style={{position:"sticky",top:0,background:"white",zIndex:1}}>
-                        <tr>{["N°","Cuota","Interés","Capital","Saldo"].map(h=><th key={h} style={{padding:"8px 6px",textAlign:h==="N°"?"left":"right",borderBottom:"2px solid #e2e8f0",color:"#94a3b8",fontWeight:700,textTransform:"uppercase",fontSize:10}}>{h}</th>)}</tr>
-                      </thead>
-                      <tbody>
-                        {Array.from({length:Math.min(n,360)},(_,i)=>i+1).map(ki=>{
-                          const row=calcAmortK(c.montoOriginal,r,n,ki);
-                          const esCur=ki===k;
-                          return <tr key={ki} style={{borderTop:"1px solid #f8fafc",background:esCur?"#eef2ff":"transparent",fontWeight:esCur?700:400}}>
-                            <td style={{padding:"5px 6px",color:esCur?"#4f46e5":"#94a3b8"}}>{ki}{esCur&&" ←"}</td>
-                            <td style={{textAlign:"right",padding:"5px 6px",fontFamily:"'DM Mono',monospace"}}>{fmt(row.cuota)}</td>
-                            <td style={{textAlign:"right",padding:"5px 6px",fontFamily:"'DM Mono',monospace",color:c.tipo==="hipotecario"?"#7c3aed":"#ef4444"}}>{fmt(row.interes)}</td>
-                            <td style={{textAlign:"right",padding:"5px 6px",fontFamily:"'DM Mono',monospace",color:"#16a34a"}}>{fmt(row.capital)}</td>
-                            <td style={{textAlign:"right",padding:"5px 6px",fontFamily:"'DM Mono',monospace"}}>{fmt(row.saldo)}</td>
-                          </tr>;
-                        })}
-                      </tbody>
-                    </table>
-                  </div>}
-                </div>;
-              })}
-            </div>}
-
-            {/* ════ REPORTES ════ */}
-            {tab==="reportes" && <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {[{id:"anual",l:"Anual"},{id:"s1",l:"1er Sem."},{id:"s2",l:"2do Sem."},{id:"q1",l:"Q1"},{id:"q2",l:"Q2"},{id:"q3",l:"Q3"},{id:"q4",l:"Q4"}].map(p=>(
-                  <button key={p.id} onClick={()=>setPeriodo(p.id)} style={pill(periodo===p.id)}>{p.l}</button>
-                ))}
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                {[{l:"📈 Ingresos brutos",v:resumen.haberes,c:"#16a34a"},{l:"💵 Ingresos netos",v:resumen.neto,c:"#15803d"},{l:"💸 Total gastos",v:resumen.gastos,c:"#ef4444"},{l:"🏦 Ahorro potencial",v:resumen.neto-resumen.gastos,c:resumen.neto-resumen.gastos>=0?"#4f46e5":"#dc2626"}].map((c,i)=>(
-                  <div key={i} style={card}>
-                    <div style={{fontSize:11,color:"#94a3b8",fontWeight:600}}>{c.l}</div>
-                    <div style={{fontFamily:"'DM Mono',monospace",fontWeight:700,fontSize:17,marginTop:6,color:c.c}}>{fmt(c.v)}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:8}}>Evolución mensual {anio}</div>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={barData} margin={{top:5,right:5,left:-20,bottom:0}}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
-                    <XAxis dataKey="mes" tick={{fontSize:10,fill:"#94a3b8"}}/>
-                    <YAxis tickFormatter={v=>v>=1000000?`${(v/1000000).toFixed(1)}M`:v>=1000?`${Math.round(v/1000)}K`:"0"} tick={{fontSize:9,fill:"#94a3b8"}}/>
-                    <Tooltip formatter={(v,n)=>[fmt(v),n]} contentStyle={{borderRadius:10,fontSize:12}}/>
-                    <Legend wrapperStyle={{fontSize:11}}/>
-                    <Bar dataKey="Ingresos" fill="#6366f1" radius={[4,4,0,0]}/>
-                    <Bar dataKey="Gastos" fill="#f87171" radius={[4,4,0,0]}/>
-                    <Bar dataKey="Ahorro" fill="#34d399" radius={[4,4,0,0]}/>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>Detalle mensual</div>
-                <div style={{overflowX:"auto"}}>
-                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-                    <thead><tr style={{color:"#94a3b8",fontWeight:700,fontSize:10,textTransform:"uppercase"}}>
-                      {["Mes","Haberes","Neto","Gastos","Créditos","Ahorro"].map(h=><th key={h} style={{textAlign:h==="Mes"?"left":"right",padding:"6px 4px",borderBottom:"1px solid #e2e8f0",whiteSpace:"nowrap"}}>{h}</th>)}
-                    </tr></thead>
-                    <tbody>
-                      {mesesPer.map(m=>{
-                        const ti=totIng(m),tg=totGas(m);
-                        const cred=credActivos(anio,m).reduce((s,c)=>s+c.cuota,0);
-                        const ah=ti.neto-tg-cred;
-                        return <tr key={m} style={{borderTop:"1px solid #f1f5f9",opacity:ti.haberes>0||tg>0?1:0.3}}>
-                          <td style={{padding:"7px 4px",fontWeight:600,color:"#475569"}}>{MESES_C[m]}</td>
-                          <td style={{textAlign:"right",padding:"7px 4px",fontFamily:"'DM Mono',monospace",color:"#16a34a"}}>{fmt(ti.haberes)}</td>
-                          <td style={{textAlign:"right",padding:"7px 4px",fontFamily:"'DM Mono',monospace",color:"#15803d"}}>{fmt(ti.neto)}</td>
-                          <td style={{textAlign:"right",padding:"7px 4px",fontFamily:"'DM Mono',monospace",color:"#ef4444"}}>{fmt(tg)}</td>
-                          <td style={{textAlign:"right",padding:"7px 4px",fontFamily:"'DM Mono',monospace",color:"#d97706"}}>{fmt(cred)}</td>
-                          <td style={{textAlign:"right",padding:"7px 4px",fontFamily:"'DM Mono',monospace"}}><b style={{color:ah>=0?"#4f46e5":"#dc2626"}}>{fmt(ah)}</b></td>
-                        </tr>;
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>}
-
-            {/* ════ IGC ════ */}
-            {tab==="igc" && <div style={{display:"flex",flexDirection:"column",gap:14}}>
-              <div style={{background:"linear-gradient(135deg,#1e1b4b,#4338ca)",borderRadius:20,padding:20}}>
-                <div style={{fontSize:14,fontWeight:700,color:"#a5b4fc",marginBottom:14}}>📊 Resumen IGC {anio}</div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-                  {[{l:"Renta anual bruta",v:fmt(igcCalc.rentaBruta),c:"#86efac"},{l:"Renta en UTA",v:`${igcCalc.rentaUTA.toFixed(2)} UTA`,c:"#a5b4fc"},{l:"Deducción Art.55bis",v:fmt(igcCalc.ded55bis),c:"#c4b5fd"},{l:"Renta imponible",v:fmt(igcCalc.rentaImponible),c:"#fcd34d"},{l:"Tramo aplicable",v:igcCalc.tramo.label,c:"#fdba74"},{l:"IGC estimado",v:fmt(igcCalc.igc),c:"#fca5a5"}].map((c,i)=>(
-                    <div key={i}><div style={{fontSize:11,color:"#818cf8",fontWeight:600}}>{c.l}</div><div style={{fontFamily:"'DM Mono',monospace",fontWeight:700,fontSize:15,color:c.c,marginTop:4}}>{c.v}</div></div>
-                  ))}
-                </div>
-              </div>
-              <div style={card}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:12}}>🔄 Impuesto retenido vs IGC</div>
-                <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                  <div style={{display:"flex",justifyContent:"space-between",paddingBottom:8,borderBottom:"1px solid #f1f5f9",fontSize:14}}>
-                    <span style={{color:"#64748b"}}>IGC calculado</span>
-                    <span style={{fontFamily:"'DM Mono',monospace",fontWeight:700,color:"#f97316"}}>{fmt(igcCalc.igc)}</span>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",paddingBottom:8,borderBottom:"1px solid #f1f5f9",fontSize:14}}>
-                    <span style={{color:"#64748b"}}>Total retenido en sueldos</span>
-                    <span style={{fontFamily:"'DM Mono',monospace",fontWeight:700,color:"#3b82f6"}}>{fmt(igcCalc.retenido)}</span>
-                  </div>
-                  <div style={{display:"flex",justifyContent:"space-between",padding:"14px 16px",borderRadius:14,background:igcCalc.diferencia>0?"#fef2f2":"#f0fdf4",fontSize:14,fontWeight:700}}>
-                    <span style={{color:igcCalc.diferencia>0?"#991b1b":"#166534"}}>{igcCalc.diferencia>0?"⚠️ Estimado a PAGAR":"✅ Estimado DEVOLUCIÓN"}</span>
-                    <span style={{fontFamily:"'DM Mono',monospace",fontSize:18,color:igcCalc.diferencia>0?"#dc2626":"#16a34a"}}>{fmt(Math.abs(igcCalc.diferencia))}</span>
-                  </div>
-                </div>
-                <div style={{fontSize:11,color:"#94a3b8",marginTop:8}}>* Estimación referencial. No incluye APV régimen A, art. 42 bis, ni rentas exentas. Verifica con tu contador.</div>
-              </div>
-              <div style={card}>
-                <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>Tabla IGC {anio} · UTM {fmt(config.utm)} · UTA {fmt(config.utm*12)}</div>
-                <div style={{overflowX:"auto"}}>
-                  <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
-                    <thead><tr style={{color:"#94a3b8",fontWeight:700,fontSize:10,textTransform:"uppercase"}}>
-                      {["Tramo","Tasa","Desde","Hasta"].map(h=><th key={h} style={{textAlign:h==="Tramo"?"left":"right",padding:"6px 4px",borderBottom:"2px solid #e2e8f0"}}>{h}</th>)}
-                    </tr></thead>
-                    <tbody>
-                      {IGC_TRAMOS.map((t,i)=>{
-                        const es=igcCalc.tramo===t&&igcCalc.rentaImponible>0;
-                        return <tr key={i} style={{borderTop:"1px solid #f1f5f9",background:es?"#eef2ff":"transparent",fontWeight:es?700:400}}>
-                          <td style={{padding:"8px 4px",color:es?"#4f46e5":"#475569",whiteSpace:"nowrap"}}>
-                            {t.hasta===Infinity?`> ${t.desde} UTA`:t.desde===0?`≤ ${t.hasta} UTA`:`${t.desde}–${t.hasta} UTA`}
-                            {es&&<span style={{marginLeft:6,background:"#4f46e5",color:"white",fontSize:10,padding:"1px 6px",borderRadius:99}}>tu tramo</span>}
-                          </td>
-                          <td style={{textAlign:"right",padding:"8px 4px"}}><span style={{background:t.tasa===0?"#f0fdf4":"#fff7ed",color:t.tasa===0?"#16a34a":"#ea580c",padding:"2px 8px",borderRadius:99,fontSize:11,fontWeight:700}}>{t.tasa===0?"Exento":`${t.tasa*100}%`}</span></td>
-                          <td style={{textAlign:"right",padding:"8px 4px",fontFamily:"'DM Mono',monospace"}}>{fmt(t.desde*igcCalc.uta)}</td>
-                          <td style={{textAlign:"right",padding:"8px 4px",fontFamily:"'DM Mono',monospace"}}>{t.hasta===Infinity?"Sin límite":fmt(t.hasta*igcCalc.uta)}</td>
-                        </tr>;
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>}
-
+<div id="ld" style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;gap:12px"><div class="spin"></div><div style="color:#64748b;font-size:14px">Cargando...</div></div>
+<div id="ap" style="display:none">
+  <div class="hdr">
+    <div style="max-width:740px;margin:0 auto">
+      <div class="row">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:white;letter-spacing:-.5px">💼 Control Financiero</div>
+          <div style="font-size:11px;color:#a5b4fc;margin-top:4px" id="ss">🔄 Actualizando...</div>
+          <div style="display:flex;gap:14px;font-size:12px;color:#c7d2fe;margin-top:3px">
+            <span>UTM: <b class="mono" id="hu">–</b></span>
+            <span>UF: <b class="mono" id="hf">–</b></span>
+            <button onclick="fetchSII()" style="font-size:10px;color:#c7d2fe;background:rgba(255,255,255,.12);border:none;border-radius:99px;padding:2px 10px;cursor:pointer">↻</button>
           </div>
         </div>
-      );
-    }
+        <select id="ys" onchange="changeAnio(this.value)" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:white;font-size:14px;font-weight:700;width:auto;padding:8px 28px 8px 12px;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 12 12%22%3E%3Cpath fill=%22white%22 d=%22M6 8L1 3h10z%22/%3E%3C/svg%3E')">
+          <option>2022</option><option>2023</option><option>2024</option><option>2025</option><option>2026</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="cnt">
+    <div id="pi"></div>
+    <div id="pg" style="display:none"></div>
+    <div id="pc" style="display:none"></div>
+    <div id="pr" style="display:none"></div>
+    <div id="pq" style="display:none"></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn on" id="ti" onclick="showTab('i')"><div style="font-size:20px">💰</div><div>Ingresos</div></button>
+    <button class="tab-btn" id="tg" onclick="showTab('g')"><div style="font-size:20px">💳</div><div>Gastos</div></button>
+    <button class="tab-btn" id="tc" onclick="showTab('c')"><div style="font-size:20px">🏦</div><div>Créditos</div></button>
+    <button class="tab-btn" id="tr" onclick="showTab('r')"><div style="font-size:20px">📊</div><div>Reportes</div></button>
+    <button class="tab-btn" id="tq" onclick="showTab('q')"><div style="font-size:20px">🧾</div><div>IGC</div></button>
+  </div>
+</div>
+<script>
+var MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+var MC=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+var SUBCAT=[
+  {id:"telefonia",l:"📱 Telefonía"},{id:"seguros",l:"🛡 Seguros"},
+  {id:"supermercado",l:"🛒 Supermercado"},{id:"autopistas",l:"🛣 Autopistas"},
+  {id:"combustible",l:"⛽ Combustible"},{id:"estacionamiento",l:"🅿 Estacionamiento"},
+  {id:"apv",l:"💼 APV"},{id:"educacion",l:"📚 Educación"},
+  {id:"creditos",l:"🏦 Créditos"},{id:"impuestos",l:"📋 Impuestos"},
+  {id:"internet",l:"🌐 Internet"},{id:"agua",l:"💧 Agua"},
+  {id:"electricidad",l:"⚡ Electricidad"},{id:"alarma",l:"🔒 Alarma"},
+  {id:"clubes",l:"🏋 Clubes"}
+];
+var TRAM=[
+  {d:0,h:13.5,t:0,r:0,l:"Exento"},{d:13.5,h:30,t:.04,r:.54,l:"4%"},
+  {d:30,h:50,t:.08,r:1.74,l:"8%"},{d:50,h:70,t:.135,r:4.49,l:"13.5%"},
+  {d:70,h:90,t:.23,r:11.14,l:"23%"},{d:90,h:120,t:.304,r:17.80,l:"30.4%"},
+  {d:120,h:150,t:.35,r:23.28,l:"35%"},{d:150,h:Infinity,t:.40,r:30.78,l:"40%"}
+];
+var hoy=new Date(),anio=hoy.getFullYear(),mes=hoy.getMonth(),tab="i",sg="vida",per="anual",amId=null;
+var cfg={utm:68050,uf:38000,lastUpdate:null},ing={},gas={},creds=[];
+function lg(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+function ls(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function loadAll(){var c=lg("fcfg");if(c)cfg=c;var cr=lg("fcr");if(cr)creds=cr;loadY(anio);}
+function loadY(a){var i=lg("fi"+a);ing=i||{};var g=lg("fg"+a);gas=g||{};}
+function si(){ls("fi"+anio,ing)}function sg2(){ls("fg"+anio,gas)}function sc(){ls("fcr",creds)}function scfg(){ls("fcfg",cfg)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function fmt(n){return"$"+Math.round(n||0).toLocaleString("es-CL")}
+function pct(a,b){return b>0?((a/b)*100).toFixed(1)+"%":"0%"}
+function cuota(P,r,n){if(!P||!n)return 0;if(r===0)return P/n;return P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)}
+function amort(P,r,n,k){
+  if(k<1||k>n)return{in:0,ca:0,sa:0,cu:0};
+  var cu=cuota(P,r,n);
+  if(r===0)return{in:0,ca:cu,sa:Math.max(0,P-cu*k),cu:cu};
+  var s0=P*(Math.pow(1+r,n)-Math.pow(1+r,k-1))/(Math.pow(1+r,n)-1);
+  var inc=s0*r;
+  return{in:inc,ca:cu-inc,sa:Math.max(0,s0-(cu-inc)),cu:cu};
+}
+function nk(c,a,m){var k=(a-c.ai)*12+(m-c.mi)+1;return(k>=1&&k<=c.n)?k:null}
+function gI(m){return ing[String(m)]||[]}
+function gG(m){return gas[String(m)]||[]}
+function tI(m){
+  var l=gI(m),hab=0,afp=0,sal=0,ret=0,otr=0;
+  l.forEach(function(x){hab+=x.h;afp+=x.a;sal+=x.s;ret+=x.r;otr+=x.o;});
+  return{h:hab,a:afp,s:sal,r:ret,o:otr,n:hab-afp-sal-ret-otr};
+}
+function tG(m){return gG(m).reduce(function(s,x){return s+x.m},0)}
+function cAct(a,m){
+  return creds.map(function(c){
+    var k=nk(c,a,m);if(!k)return null;
+    var r=c.t/100,am=amort(c.p,r,c.n,k);
+    return Object.assign({},c,{k:k,int:am.in,cap:am.ca,sal:am.sa,cu:am.cu});
+  }).filter(Boolean);
+}
+function iHA(a){
+  var t=0;
+  for(var m=0;m<12;m++)cAct(a,m).forEach(function(c){if(c.tp==="hipotecario")t+=c.int;});
+  return t;
+}
+function calcIGC(){
+  var uta=cfg.utm*12,rb=0,ret=0;
+  for(var m=0;m<12;m++){var ti=tI(m);rb+=ti.h;ret+=ti.r;}
+  var ih=iHA(anio),ded=Math.min(ih,8*uta),ri=Math.max(0,rb-ded),ru=uta>0?ri/uta:0;
+  var tr=TRAM[0];TRAM.forEach(function(t){if(ru>t.d)tr=t;});
+  var igc=Math.max(0,ri*tr.t-tr.r*uta);
+  return{rb:rb,ri:ri,uta:uta,ru:ru,tr:tr,igc:igc,ret:ret,ded:ded,ih:ih,df:igc-ret};
+}
+function mP(){
+  if(per==="anual")return[0,1,2,3,4,5,6,7,8,9,10,11];
+  if(per==="s1")return[0,1,2,3,4,5];if(per==="s2")return[6,7,8,9,10,11];
+  var q=parseInt(per[1])-1;return[q*3,q*3+1,q*3+2];
+}
+async function fetchSII(){
+  document.getElementById("ss").textContent="🔄 Actualizando...";
+  try{
+    var ru=await fetch("https://mindicador.cl/api/utm");
+    var rf=await fetch("https://mindicador.cl/api/uf");
+    var du=await ru.json(),df=await rf.json();
+    var utm=du&&du.serie&&du.serie[0]&&du.serie[0].valor;
+    var uf=df&&df.serie&&df.serie[0]&&df.serie[0].valor;
+    if(utm&&uf){cfg={utm:Math.round(utm),uf:Math.round(uf),lastUpdate:hoy.toISOString().split("T")[0]};scfg();}
+  }catch(e){}
+  updH();renderTab();
+}
+function updH(){
+  var s=document.getElementById("ss");if(s)s.textContent=cfg.lastUpdate?"✅ SII "+cfg.lastUpdate:"⚠️ Sin datos SII";
+  var u=document.getElementById("hu");if(u)u.textContent=fmt(cfg.utm);
+  var f=document.getElementById("hf");if(f)f.textContent=fmt(cfg.uf);
+}
+function changeAnio(v){anio=parseInt(v);loadY(anio);renderTab();}
+function showTab(t){
+  tab=t;
+  ["i","g","c","r","q"].forEach(function(id){
+    var p=document.getElementById("p"+id),btn=document.getElementById("t"+id);
+    if(p)p.style.display=id===t?"block":"none";
+    if(btn)btn.className="tab-btn"+(id===t?" on":"");
+  });
+  renderTab();
+}
+function renderTab(){if(tab==="i")rI();else if(tab==="g")rG();else if(tab==="c")rC();else if(tab==="r")rR();else if(tab==="q")rQ();}
+function mPills(){return'<div class="pills">'+MC.map(function(m,i){return'<button class="pill'+(mes===i?" on":"")+'" onclick="setMes('+i+'">'+m+"</button>"}).join("")+"</div>"}
+function setMes(i){mes=i;renderTab();}
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+// ── INGRESOS ──────────────────────────────────────────────────────────────
+function rI(){
+  var list=gI(mes),html=mPills();
+  html+='<div class="card"><div class="st">➕ Nuevo ingreso — <span style="color:#4f46e5">'+MESES[mes]+"</span></div>";
+  html+='<div class="g2">';
+  html+='<div style="grid-column:1/-1"><label class="label">FUENTE</label><input id="if" placeholder="Sueldo, Honorarios, Arriendo..."/></div>';
+  html+='<div><label class="label">TOTAL HABERES</label><input class="mono" id="ih" type="number" placeholder="0" oninput="pN()"/></div>';
+  html+='<div><label class="label">DESC. AFP</label><input class="mono" id="ia" type="number" placeholder="0" oninput="pN()"/></div>';
+  html+='<div><label class="label">DESC. SALUD</label><input class="mono" id="is" type="number" placeholder="0" oninput="pN()"/></div>';
+  html+='<div><label class="label">IMPUESTO RETENIDO</label><input class="mono" id="ir" type="number" placeholder="0" oninput="pN()"/></div>';
+  html+='<div><label class="label">OTROS DESC.</label><input class="mono" id="io" type="number" placeholder="0" oninput="pN()"/></div>';
+  html+='</div><div id="np" style="display:none" class="np"><span style="font-size:13px;color:#6366f1">Neto estimado</span><b class="mono" id="nv" style="font-size:16px;color:#4f46e5"></b></div>';
+  html+='<button class="btn-primary" onclick="addI()">Agregar ingreso</button></div>';
+  if(list.length>0){
+    html+='<div class="card"><div class="st">Ingresos de '+MESES[mes]+"</div>";
+    list.forEach(function(item){
+      html+='<div style="background:#f8fafc;border-radius:14px;padding:12px 14px;border:1px solid #e2e8f0;margin-bottom:8px">';
+      html+='<div class="row" style="margin-bottom:8px"><span style="font-weight:700;font-size:14px">'+item.f+'</span><button class="x" onclick="dI(\''+item.id+'\')">✕</button></div>';
+      html+='<div class="g3">';
+      html+='<div>Haberes<br/><b class="mono" style="color:#16a34a">'+fmt(item.h)+"</b></div>";
+      html+='<div>AFP<br/><span class="mono" style="color:#ef4444">'+fmt(item.a)+"</span></div>";
+      html+='<div>Salud<br/><span class="mono" style="color:#ef4444">'+fmt(item.s)+"</span></div>";
+      html+='<div>Retenido<br/><span class="mono" style="color:#ef4444">'+fmt(item.r)+"</span></div>";
+      html+='<div>Otros<br/><span class="mono" style="color:#ef4444">'+fmt(item.o)+"</span></div>";
+      html+='<div style="background:#eef2ff;border-radius:8px;padding:4px 8px">Neto<br/><b class="mono" style="color:#4f46e5">'+fmt(item.n)+"</b></div>";
+      html+='</div></div>';
+    });
+    var t=tI(mes);
+    html+='<div style="padding-top:10px;border-top:2px dashed #e2e8f0" class="g3">';
+    html+='<div style="text-align:center">Haberes<br/><b class="mono" style="color:#16a34a;font-size:14px">'+fmt(t.h)+'</b></div>';
+    html+='<div style="text-align:center">Descuentos<br/><b class="mono" style="color:#ef4444;font-size:14px">'+fmt(t.a+t.s+t.r+t.o)+'</b></div>';
+    html+='<div style="text-align:center">Neto<br/><b class="mono" style="color:#4f46e5;font-size:16px">'+fmt(t.n)+'</b></div>';
+    html+='</div></div>';
+  }
+  document.getElementById("pi").innerHTML=html;
+}
+function pN(){
+  var h=+(document.getElementById("ih")||{}).value||0;
+  var a=+(document.getElementById("ia")||{}).value||0;
+  var s=+(document.getElementById("is")||{}).value||0;
+  var r=+(document.getElementById("ir")||{}).value||0;
+  var o=+(document.getElementById("io")||{}).value||0;
+  var p=document.getElementById("np");
+  if(p&&h>0){p.style.display="flex";document.getElementById("nv").textContent=fmt(h-a-s-r-o);}
+  else if(p)p.style.display="none";
+}
+function addI(){
+  var h=+(document.getElementById("ih")||{}).value||0;
+  if(!h)return;
+  var a=+(document.getElementById("ia")||{}).value||0;
+  var s=+(document.getElementById("is")||{}).value||0;
+  var r=+(document.getElementById("ir")||{}).value||0;
+  var o=+(document.getElementById("io")||{}).value||0;
+  var f=(document.getElementById("if")||{}).value||"Sueldo";
+  var list=gI(mes);
+  list.push({id:uid(),f:f,h:h,a:a,s:s,r:r,o:o,n:h-a-s-r-o});
+  ing[String(mes)]=list;si();rI();
+}
+function dI(id){ing[String(mes)]=gI(mes).filter(function(x){return x.id!==id});si();rI();}
 
-    // Register service worker for offline + PWA
-    if("serviceWorker" in navigator){
-      window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+// ── GASTOS ────────────────────────────────────────────────────────────────
+function rG(){
+  var act=cAct(anio,mes),ti=tI(mes),tg=tG(mes);
+  var html=mPills();
+  html+='<div class="g3" style="margin-bottom:14px">';
+  [{id:"vida",icon:"🏠",l:"Vida"},{id:"cuotas",icon:"📦",l:"Cuotas TC"},{id:"varios",icon:"🛍",l:"Varios"}].forEach(function(c){
+    html+='<button class="cb'+(sg===c.id?" on":"")+'" onclick="setSG(\''+c.id+'\')">'+c.icon+" "+c.l+"</button>";
+  });
+  html+='</div>';
+  html+='<div class="card"><div class="st">➕ Gasto — <span style="color:#4f46e5">'+MESES[mes]+'</span></div><div class="g2">';
+  if(sg==="vida"){
+    html+='<div><label class="label">SUBCATEGORÍA</label><select id="gs">'+SUBCAT.map(function(s){return'<option value="'+s.id+'">'+s.l+'</option>'}).join("")+"</select></div>";
+  }
+  html+='<div style="grid-column:'+(sg!=="vida"?"1/-1":"auto")+'"><label class="label">DESCRIPCIÓN</label><input id="gd" placeholder="Descripción..."/></div>';
+  html+='<div><label class="label">MONTO</label><input class="mono" id="gm" type="number" placeholder="0"/></div>';
+  if(sg==="cuotas"){
+    html+='<div><label class="label">CUOTA N°</label><input class="mono" id="gca" type="number" placeholder="1"/></div>';
+    html+='<div><label class="label">DE CUOTAS</label><input class="mono" id="gct" type="number" placeholder="12"/></div>';
+  }
+  html+='</div><button class="btn-primary" onclick="addG()">Agregar gasto</button></div>';
+  var lista=gG(mes).filter(function(g){return g.cat===sg});
+  if(lista.length>0){
+    html+='<div class="card"><div class="st">'+(sg==="vida"?"🏠 Vida":sg==="cuotas"?"📦 Cuotas TC":"🛍 Varios")+" — "+MESES[mes]+'</div>';
+    lista.forEach(function(item){
+      var sub=item.sub?SUBCAT.filter(function(s){return s.id===item.sub})[0]:"";
+      var subL=sub?sub.l.replace(/^\S+\s/,""):"";
+      html+='<div class="irow">';
+      html+='<div style="font-size:13px;flex:1;min-width:0;margin-right:8px">';
+      if(subL)html+='<span class="badge" style="background:#eef2ff;color:#6366f1;margin-right:6px">'+subL+"</span>";
+      html+='<span style="color:#475569">'+(item.d||"—")+"</span>";
+      if(item.ct>0)html+='<span style="color:#94a3b8;font-size:11px;margin-left:4px">('+item.ca+"/"+item.ct+")</span>";
+      html+='</div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0">';
+      html+='<span class="mono" style="font-weight:700;color:#ef4444">'+fmt(item.m)+'</span>';
+      html+='<button class="x" onclick="dG(\''+item.id+'\')">✕</button></div></div>';
+    });
+    var sub2=lista.reduce(function(s,x){return s+x.m},0);
+    html+='<div class="row" style="padding-top:10px;border-top:2px dashed #e2e8f0;font-weight:700;font-size:14px"><span>Subtotal</span><span class="mono" style="color:#ef4444">'+fmt(sub2)+'</span></div></div>';
+  }
+  if(act.length>0){
+    html+='<div class="card" style="border-left:4px solid #f59e0b"><div class="st">🏦 Créditos activos — '+MESES[mes]+'</div>';
+    act.forEach(function(c){
+      html+='<div style="background:#fffbeb;border-radius:12px;padding:12px;border:1px solid #fde68a;margin-bottom:8px">';
+      html+='<div class="row" style="font-size:13px;font-weight:600;margin-bottom:8px"><div>'+c.nm+' <span style="color:#94a3b8;font-weight:400;font-size:11px">cuota '+c.k+"/"+c.n+"</span></div><span class='mono' style='color:#d97706'>"+fmt(c.cu)+"</span></div>";
+      html+='<div class="g3"><div>Interés '+(c.tp==="hipotecario"?"⭐":"")+'<br/><b class="mono" style="color:'+(c.tp==="hipotecario"?"#7c3aed":"#ef4444")+'">'+fmt(c.int)+'</b></div>';
+      html+='<div>Capital<br/><b class="mono" style="color:#16a34a">'+fmt(c.cap)+'</b></div>';
+      html+='<div>Saldo<br/><b class="mono" style="color:#475569">'+fmt(c.sal)+'</b></div></div></div>';
+    });
+    html+='</div>';
+  }
+  html+='<div class="g3"><div class="sc"><div class="sl">Neto</div><div class="sv" style="color:#16a34a">'+fmt(ti.n)+'</div></div>';
+  html+='<div class="sc"><div class="sl">Gastos</div><div class="sv" style="color:#ef4444">'+fmt(tg)+'</div></div>';
+  html+='<div class="sc"><div class="sl">Ahorro</div><div class="sv" style="color:'+(ti.n-tg>=0?"#4f46e5":"#dc2626")+'">'+fmt(ti.n-tg)+'</div></div></div>';
+  document.getElementById("pg").innerHTML=html;
+}
+function setSG(c){sg=c;rG();}
+function addG(){
+  var m=+(document.getElementById("gm")||{}).value||0;if(!m)return;
+  var list=gG(mes);
+  list.push({id:uid(),cat:sg,sub:sg==="vida"?((document.getElementById("gs")||{}).value||""):"",
+    d:(document.getElementById("gd")||{}).value||"",m:m,
+    ca:+(document.getElementById("gca")||{}).value||0,
+    ct:+(document.getElementById("gct")||{}).value||0});
+  gas[String(mes)]=list;sg2();rG();
+}
+function dG(id){gas[String(mes)]=gG(mes).filter(function(x){return x.id!==id});sg2();rG();}
+
+// ── CRÉDITOS ──────────────────────────────────────────────────────────────
+function rC(){
+  var html=mPills();
+  html+='<div class="card"><div class="st">➕ Registrar crédito</div><div class="g2">';
+  html+='<div style="grid-column:1/-1"><label class="label">NOMBRE</label><input id="cn" placeholder="Hipotecario Banco X..."/></div>';
+  html+='<div><label class="label">TIPO</label><select id="ctp"><option value="hipotecario">🏠 Hipotecario</option><option value="consumo">💳 Consumo</option><option value="automotriz">🚗 Automotriz</option></select></div>';
+  html+='<div><label class="label">MONTO ORIGINAL ($)</label><input class="mono" id="cp" type="number" placeholder="0" oninput="pC()"/></div>';
+  html+='<div><label class="label">TASA MENSUAL (%)</label><input class="mono" id="ct" type="number" step="0.001" placeholder="0.500" oninput="pC()"/></div>';
+  html+='<div><label class="label">TOTAL CUOTAS</label><input class="mono" id="cq" type="number" placeholder="240" oninput="pC()"/></div>';
+  html+='<div><label class="label">MES INICIO</label><select id="cmi">'+MESES.map(function(m,i){return'<option value="'+i+'"'+(i===mes?" selected":"")+">"+m+"</option>"}).join("")+"</select></div>";
+  html+='<div><label class="label">AÑO INICIO</label><select id="cai">';
+  [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026].forEach(function(a){html+='<option'+(a===anio?" selected":"")+">"+a+"</option>";});
+  html+='</select></div></div>';
+  html+='<div id="cpv" style="display:none;background:#eef2ff;border-radius:12px;padding:12px 14px;margin-top:10px" class="g3"></div>';
+  html+='<button class="btn-amber" onclick="addC()">Registrar crédito</button></div>';
+  if(creds.length===0){
+    html+='<div class="es"><div style="font-size:40px">🏦</div><div style="font-size:14px;font-weight:600;margin-top:8px">Sin créditos registrados</div><div style="font-size:12px;margin-top:4px">Registra hipotecarios o de consumo para ver la amortización y deducciones IGC.</div></div>';
+  }
+  var ih=iHA(anio);
+  creds.forEach(function(c){
+    var r=c.t/100,n=c.n,k=nk(c,anio,mes),cu=cuota(c.p,r,n),am=k?amort(c.p,r,n,k):null;
+    var pp=k?Math.round((k/n)*100):0;
+    var col=c.tp==="hipotecario"?"#7c3aed":c.tp==="consumo"?"#3b82f6":"#f59e0b";
+    var bg2=c.tp==="hipotecario"?"#ede9fe":c.tp==="consumo"?"#dbeafe":"#fef3c7";
+    html+='<div class="card" style="border-left:4px solid '+col+'">';
+    html+='<div class="row" style="align-items:flex-start;margin-bottom:10px">';
+    html+='<div><div style="font-weight:700;font-size:15px">'+c.nm+'</div>';
+    html+='<div style="font-size:12px;color:#64748b;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap"><span class="tag" style="background:'+bg2+';color:'+col+'">'+c.tp+'</span><span>'+c.t+'% m.</span><span>Inicio: '+MC[c.mi]+" "+c.ai+'</span></div></div>';
+    html+='<button class="x" onclick="dC(\''+c.id+'\')">✕</button></div>';
+    html+='<div class="g3" style="gap:6px;margin-bottom:10px;font-size:11px">';
+    html+='<div class="sc"><div class="sl">Monto</div><div class="sv" style="font-size:11px;color:#475569">'+fmt(c.p)+'</div></div>';
+    html+='<div class="sc"><div class="sl">Cuota</div><div class="sv" style="font-size:11px;color:#4f46e5">'+fmt(cu)+'</div></div>';
+    html+='<div class="sc"><div class="sl">'+(k?"Cuota":"Estado")+'</div><div class="sv" style="font-size:11px;color:'+(k?"#4f46e5":"#94a3b8")+'">'+(k?k+"/"+n:"Inactivo")+'</div></div>';
+    html+='</div>';
+    if(k)html+='<div class="prog"><div class="progf" style="width:'+pp+'%"></div></div>';
+    if(am){
+      var amBg=c.tp==="hipotecario"?"#faf5ff":"#f0fdf4",amBd=c.tp==="hipotecario"?"#ddd6fe":"#bbf7d0";
+      html+='<div style="background:'+amBg+';border-radius:14px;padding:12px;margin-bottom:10px;border:1px solid '+amBd+'">';
+      html+='<div style="font-size:12px;font-weight:700;color:'+col+';margin-bottom:8px">Detalle cuota '+k+' — '+MESES[mes]+' '+anio+'</div>';
+      html+='<div class="g3" style="font-size:12px">';
+      html+='<div>Interés '+(c.tp==="hipotecario"?"⭐":"")+'<br/><b class="mono" style="color:'+col+';font-size:14px">'+fmt(am.in)+'</b>';
+      html+='<div class="mbar"><div style="height:100%;border-radius:99px;background:'+col+';width:'+pct(am.in,am.cu)+'"></div></div>';
+      html+='<span style="font-size:10px;color:#94a3b8">'+pct(am.in,am.cu)+' cuota</span></div>';
+      html+='<div>Capital<br/><b class="mono" style="color:#16a34a;font-size:14px">'+fmt(am.ca)+'</b>';
+      html+='<div class="mbar"><div style="height:100%;border-radius:99px;background:#16a34a;width:'+pct(am.ca,am.cu)+'"></div></div>';
+      html+='<span style="font-size:10px;color:#94a3b8">'+pct(am.ca,am.cu)+' cuota</span></div>';
+      html+='<div>Saldo<br/><b class="mono" style="color:#475569;font-size:14px">'+fmt(am.sa)+'</b>';
+      html+='<div style="height:18px"></div><span style="font-size:10px;color:#94a3b8">'+pct(am.sa,c.p)+' capital</span></div>';
+      html+='</div>';
+      if(c.tp==="hipotecario")html+='<div class="a55">⭐ <b>Art. 55 bis:</b> Interés deducible IGC · Acumulado '+anio+': <b class="mono">'+fmt(ih)+'</b> (máx: '+fmt(8*cfg.utm*12)+')</div>';
+      html+='</div>';
     }
-  </script>
+    html+='<button onclick="tA(\''+c.id+'\')" style="width:100%;padding:9px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;font-size:12px;font-weight:600;color:#475569;cursor:pointer">'+(amId===c.id?"▲ Ocultar amortización":"▼ Tabla de amortización")+'</button>';
+    if(amId===c.id){
+      html+='<div class="at"><table><thead><tr><th>N°</th><th>Cuota</th><th>Interés</th><th>Capital</th><th>Saldo</th></tr></thead><tbody>';
+      for(var ki=1;ki<=Math.min(n,360);ki++){
+        var row=amort(c.p,r,n,ki),cur=ki===k;
+        html+='<tr class="'+(cur?"hl":"")+'"><td style="color:'+(cur?"#4f46e5":"#94a3b8")+'">'+ki+(cur?" ←":"")+'</td>';
+        html+='<td class="mono">'+fmt(row.cu)+'</td><td class="mono" style="color:'+(c.tp==="hipotecario"?"#7c3aed":"#ef4444")+'">'+fmt(row.in)+'</td>';
+        html+='<td class="mono" style="color:#16a34a">'+fmt(row.ca)+'</td><td class="mono">'+fmt(row.sa)+'</td></tr>';
+      }
+      html+='</tbody></table></div>';
+    }
+    html+='</div>';
+  });
+  document.getElementById("pc").innerHTML=html;
+}
+function pC(){
+  var P=+(document.getElementById("cp")||{}).value||0;
+  var r=(+(document.getElementById("ct")||{}).value||0)/100;
+  var n=+(document.getElementById("cq")||{}).value||0;
+  var el=document.getElementById("cpv");if(!el)return;
+  if(P&&n){
+    var c=cuota(P,r,n);el.style.display="grid";
+    el.innerHTML='<div>Cuota<br/><b class="mono" style="color:#4f46e5">'+fmt(c)+'</b></div><div>Total<br/><b class="mono" style="color:#7c3aed">'+fmt(c*n)+'</b></div><div>Intereses<br/><b class="mono" style="color:#ef4444">'+fmt(c*n-P)+'</b></div>';
+  }else el.style.display="none";
+}
+function addC(){
+  var P=+(document.getElementById("cp")||{}).value||0;
+  var t=+(document.getElementById("ct")||{}).value||0;
+  var n=+(document.getElementById("cq")||{}).value||0;
+  if(!P||!t||!n)return;
+  creds.push({id:uid(),nm:(document.getElementById("cn")||{}).value||"Crédito",
+    tp:(document.getElementById("ctp")||{}).value||"consumo",
+    p:P,t:t,n:n,
+    mi:+(document.getElementById("cmi")||{}).value||0,
+    ai:+(document.getElementById("cai")||{}).value||anio});
+  sc();rC();
+}
+function dC(id){creds=creds.filter(function(x){return x.id!==id});sc();rC();}
+function tA(id){amId=amId===id?null:id;rC();}
+
+// ── REPORTES ──────────────────────────────────────────────────────────────
+function rR(){
+  var mp=mP(),hab=0,net=0,gst=0;
+  mp.forEach(function(m){var ti=tI(m);hab+=ti.h;net+=ti.n;gst+=tG(m);});
+  var aho=net-gst;
+  var html='<div class="pills">'+[{id:"anual",l:"Anual"},{id:"s1",l:"1er Sem."},{id:"s2",l:"2do Sem."},{id:"q1",l:"Q1"},{id:"q2",l:"Q2"},{id:"q3",l:"Q3"},{id:"q4",l:"Q4"}].map(function(p){return'<button class="pill'+(per===p.id?" on":"")+'" onclick="setPer(\''+p.id+'\')">'+p.l+"</button>"}).join("")+"</div>";
+  html+='<div class="g2" style="margin-bottom:14px">';
+  html+='<div class="card"><div class="sl">📈 Ingresos brutos</div><div class="sv" style="font-size:17px;color:#16a34a">'+fmt(hab)+'</div></div>';
+  html+='<div class="card"><div class="sl">💵 Ingresos netos</div><div class="sv" style="font-size:17px;color:#15803d">'+fmt(net)+'</div></div>';
+  html+='<div class="card"><div class="sl">💸 Total gastos</div><div class="sv" style="font-size:17px;color:#ef4444">'+fmt(gst)+'</div></div>';
+  html+='<div class="card"><div class="sl">🏦 Ahorro potencial</div><div class="sv" style="font-size:17px;color:'+(aho>=0?"#4f46e5":"#dc2626")+'">'+fmt(aho)+'</div></div></div>';
+  var maxV=1;
+  for(var m=0;m<12;m++){var v=Math.max(tI(m).n,tG(m));if(v>maxV)maxV=v;}
+  html+='<div class="card"><div class="st">Evolución mensual '+anio+'</div>';
+  html+='<div style="display:flex;align-items:flex-end;gap:3px;height:130px;padding:0 4px">';
+  for(var m=0;m<12;m++){
+    var ti2=tI(m).n,tg2=tG(m);
+    var hI=Math.round((ti2/maxV)*110),hG=Math.round((tg2/maxV)*110);
+    html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">';
+    html+='<div style="width:100%;display:flex;gap:1px;align-items:flex-end;height:110px">';
+    html+='<div style="flex:1;background:#6366f1;border-radius:3px 3px 0 0;height:'+hI+'px;min-height:'+(ti2>0?2:0)+'px"></div>';
+    html+='<div style="flex:1;background:#f87171;border-radius:3px 3px 0 0;height:'+hG+'px;min-height:'+(tg2>0?2:0)+'px"></div>';
+    html+='</div><div style="font-size:8px;color:#94a3b8">'+MC[m]+'</div></div>';
+  }
+  html+='</div><div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#64748b">';
+  html+='<span><span style="display:inline-block;width:10px;height:10px;background:#6366f1;border-radius:2px;margin-right:4px"></span>Ingresos</span>';
+  html+='<span><span style="display:inline-block;width:10px;height:10px;background:#f87171;border-radius:2px;margin-right:4px"></span>Gastos</span></div></div>';
+  html+='<div class="card"><div class="st">Detalle mensual</div><div style="overflow-x:auto"><table>';
+  html+='<thead><tr><th>Mes</th><th>Haberes</th><th>Neto</th><th>Gastos</th><th>Créditos</th><th>Ahorro</th></tr></thead><tbody>';
+  mp.forEach(function(m){
+    var ti3=tI(m),tg3=tG(m),cr=cAct(anio,m).reduce(function(s,c){return s+c.cu},0),ah=ti3.n-tg3-cr;
+    html+='<tr style="opacity:'+(ti3.h>0||tg3>0?1:.3)+'">';
+    html+='<td style="font-weight:600;color:#475569">'+MC[m]+'</td>';
+    html+='<td class="mono" style="color:#16a34a">'+fmt(ti3.h)+'</td>';
+    html+='<td class="mono" style="color:#15803d">'+fmt(ti3.n)+'</td>';
+    html+='<td class="mono" style="color:#ef4444">'+fmt(tg3)+'</td>';
+    html+='<td class="mono" style="color:#d97706">'+fmt(cr)+'</td>';
+    html+='<td class="mono"><b style="color:'+(ah>=0?"#4f46e5":"#dc2626")+'">'+fmt(ah)+'</b></td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+  document.getElementById("pr").innerHTML=html;
+}
+function setPer(p){per=p;rR();}
+
+// ── IGC ────────────────────────────────────────────────────────────────────
+function rQ(){
+  var g=calcIGC();
+  var html='<div class="igch"><div style="font-size:14px;font-weight:700;color:#a5b4fc;margin-bottom:14px">📊 Resumen IGC '+anio+'</div><div class="g2" style="gap:14px">';
+  [["Renta anual bruta",fmt(g.rb),"#86efac"],["Renta en UTA",g.ru.toFixed(2)+" UTA","#a5b4fc"],
+   ["Deducción Art.55bis",fmt(g.ded),"#c4b5fd"],["Renta imponible",fmt(g.ri),"#fcd34d"],
+   ["Tramo aplicable",g.tr.l,"#fdba74"],["IGC estimado",fmt(g.igc),"#fca5a5"]].forEach(function(x){
+    html+='<div><div style="font-size:11px;color:#818cf8;font-weight:600">'+x[0]+'</div><div class="mono" style="font-weight:700;font-size:15px;color:'+x[2]+';margin-top:4px">'+x[1]+'</div></div>';
+  });
+  html+='</div></div>';
+  if(g.ih>0){
+    html+='<div class="card" style="border-left:4px solid #7c3aed"><div class="st">⭐ Deducción Art. 55 bis — Interés hipotecario '+anio+'</div><div class="g3" style="gap:8px;font-size:12px;margin-bottom:10px">';
+    html+='<div style="background:#faf5ff;border-radius:10px;padding:10px"><div style="color:#94a3b8;font-weight:600;margin-bottom:4px">Interés pagado</div><b class="mono" style="color:#7c3aed">'+fmt(g.ih)+'</b></div>';
+    html+='<div style="background:#faf5ff;border-radius:10px;padding:10px"><div style="color:#94a3b8;font-weight:600;margin-bottom:4px">Máx. (8 UTA)</div><b class="mono" style="color:#6366f1">'+fmt(8*g.uta)+'</b></div>';
+    html+='<div style="background:#f0fdf4;border-radius:10px;padding:10px"><div style="color:#94a3b8;font-weight:600;margin-bottom:4px">Deducción</div><b class="mono" style="color:#16a34a">'+fmt(g.ded)+'</b></div></div>';
+    html+='<div class="a55">Renta imponible reducida de <b class="mono">'+fmt(g.rb)+'</b> a <b class="mono">'+fmt(g.ri)+'</b>. Consulta con tu contador para deducciones adicionales.</div></div>';
+  }
+  html+='<div class="card"><div class="st">🔄 Impuesto retenido vs IGC estimado</div>';
+  html+='<div class="row" style="padding-bottom:10px;border-bottom:1px solid #f1f5f9;font-size:14px;margin-bottom:10px"><span style="color:#64748b">IGC calculado</span><span class="mono" style="font-weight:700;color:#f97316">'+fmt(g.igc)+'</span></div>';
+  html+='<div class="row" style="padding-bottom:10px;border-bottom:1px solid #f1f5f9;font-size:14px;margin-bottom:10px"><span style="color:#64748b">Total retenido</span><span class="mono" style="font-weight:700;color:#3b82f6">'+fmt(g.ret)+'</span></div>';
+  html+='<div class="diffbox" style="background:'+(g.df>0?"#fef2f2":"#f0fdf4")+'"><span style="color:'+(g.df>0?"#991b1b":"#166534")+'">'+(g.df>0?"⚠️ Estimado a PAGAR":"✅ Estimado DEVOLUCIÓN")+'</span><span class="mono" style="font-size:18px;color:'+(g.df>0?"#dc2626":"#16a34a")+'">'+fmt(Math.abs(g.df))+'</span></div>';
+  html+='<p class="inset">* Estimación referencial. No incluye APV régimen A ni rentas exentas. Verifica con tu contador.</p></div>';
+  html+='<div class="card"><div class="st">Tabla IGC '+anio+' · UTM '+fmt(cfg.utm)+' · UTA '+fmt(cfg.utm*12)+'</div><div style="overflow-x:auto"><table>';
+  html+='<thead><tr><th>Tramo</th><th>Tasa</th><th>Desde</th><th>Hasta</th></tr></thead><tbody>';
+  TRAM.forEach(function(t){
+    var es=g.tr===t&&g.ri>0;
+    html+='<tr class="'+(es?"hl":"")+'"><td style="color:'+(es?"#4f46e5":"#475569")+';white-space:nowrap">'+(t.h===Infinity?"> "+t.d+" UTA":t.d===0?"≤ "+t.h+" UTA":t.d+"–"+t.h+" UTA")+(es?'<span class="tag" style="background:#4f46e5;color:white;margin-left:6px">tu tramo</span>':"")+'</td>';
+    html+='<td><span class="tag" style="background:'+(t.t===0?"#f0fdf4":"#fff7ed")+';color:'+(t.t===0?"#16a34a":"#ea580c")+'">'+(t.t===0?"Exento":t.t*100+"%")+'</span></td>';
+    html+='<td class="mono">'+fmt(t.d*g.uta)+'</td><td class="mono">'+(t.h===Infinity?"Sin límite":fmt(t.h*g.uta))+'</td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+  html+='<div class="card"><div class="st">📅 Ingresos por mes — '+anio+'</div><div style="overflow-x:auto"><table>';
+  html+='<thead><tr><th>Mes</th><th>Haberes</th><th>AFP</th><th>Salud</th><th>Retenido</th><th>Neto</th></tr></thead><tbody>';
+  var totH=0,totA=0,totS=0,totR=0,totN=0;
+  for(var i=0;i<12;i++){
+    var t2=tI(i);totH+=t2.h;totA+=t2.a;totS+=t2.s;totR+=t2.r;totN+=t2.n;
+    html+='<tr style="opacity:'+(t2.h>0?1:.3)+'">';
+    html+='<td style="font-weight:600;color:#475569">'+MC[i]+'</td>';
+    html+='<td class="mono" style="color:#16a34a">'+fmt(t2.h)+'</td>';
+    html+='<td class="mono" style="color:#ef4444">'+fmt(t2.a)+'</td>';
+    html+='<td class="mono" style="color:#ef4444">'+fmt(t2.s)+'</td>';
+    html+='<td class="mono" style="color:#ef4444">'+fmt(t2.r)+'</td>';
+    html+='<td class="mono"><b style="color:#4f46e5">'+fmt(t2.n)+'</b></td></tr>';
+  }
+  html+='<tr style="border-top:2px solid #e2e8f0;font-weight:700;background:#f8fafc"><td>TOTAL</td>';
+  html+='<td class="mono" style="color:#16a34a">'+fmt(totH)+'</td><td class="mono" style="color:#ef4444">'+fmt(totA)+'</td>';
+  html+='<td class="mono" style="color:#ef4444">'+fmt(totS)+'</td><td class="mono" style="color:#ef4444">'+fmt(totR)+'</td>';
+  html+='<td class="mono"><b style="color:#4f46e5">'+fmt(totN)+'</b></td></tr>';
+  html+='</tbody></table></div></div>';
+  document.getElementById("pq").innerHTML=html;
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+window.addEventListener("load",function(){
+  loadAll();
+  document.getElementById("ys").value=anio;
+  updH();renderTab();
+  document.getElementById("ld").style.display="none";
+  document.getElementById("ap").style.display="block";
+  var today=hoy.toISOString().split("T")[0];
+  if(!cfg.lastUpdate||cfg.lastUpdate<today)fetchSII();
+});
+if("serviceWorker" in navigator){
+  window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
+}
+</script>
 </body>
 </html>
